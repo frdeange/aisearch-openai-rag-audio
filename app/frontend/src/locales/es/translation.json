@@ -1,21 +1,21 @@
 {
     "app": {
-        "title": "Habla con tus datos",
-        "footer": "Creado con Azure AI Search + Azure OpenAI",
-        "stopRecording": "Detener grabación",
-        "startRecording": "Comenzar grabación",
-        "stopConversation": "Detener conversación"
+        "title": "IBM Maintenance Helper",
+        "footer": "Created by Kiko de Angel",
+        "stopRecording": "Stop Conversation",
+        "startRecording": "Start Conversation",
+        "stopConversation": "Stop Conversation"
     },
     "status": {
-        "notRecordingMessage": "Pregunta cualquier cosa sobre los beneficios de los empleados de Contoso",
-        "conversationInProgress": "Conversación en progreso"
+        "notRecordingMessage": "You can ask me about maintenance devices and doors",
+        "conversationInProgress": "In progress call"
     },
     "history": {
-        "answerHistory": "Historial de respuestas",
-        "noHistory": "Aún no hay historial."
+        "answerHistory": "Answers Historial",
+        "noHistory": "no chat yet."
     },
     "groundingFiles": {
-        "title": "Archivos de fundamentación",
-        "description": "Archivos utilizados para fundamentar las respuestas."
+        "title": "Grouding files",
+        "description": "Archives used to justify my reply."
     }
 }

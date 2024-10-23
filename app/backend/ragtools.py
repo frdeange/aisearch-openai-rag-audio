@@ -1,4 +1,5 @@
 import re
+import aiohttp
 from typing import Any
 
 from azure.core.credentials import AzureKeyCredential
@@ -77,6 +78,17 @@ async def _search_tool(
 
 KEY_PATTERN = re.compile(r'^[a-zA-Z0-9_=\-]+$')
 
+# Function to look at the API for Devices
+async def _get_device_info_tool(serial_number: str) -> ToolResult:
+    url = f"https://fakeapidevices-crbkdrgqfchyghgz.spaincentral-01.azurewebsites.net/api/devices/{serial_number}"
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+            if response.status == 200:
+                data = await response.json()
+                return ToolResult(data, ToolResultDirection.TO_SERVER)
+            else:
+                return ToolResult({"error": "Device not found"}, ToolResultDirection.TO_SERVER)
+
 # TODO: move from sending all chunks used for grounding eagerly to only sending links to 
 # the original content in storage, it'll be more efficient overall
 async def _report_grounding_tool(search_client: SearchClient, identifier_field: str, title_field: str, content_field: str, args: Any) -> None:
@@ -116,3 +128,22 @@ def attach_rag_tools(rtmt: RTMiddleTier,
 
     rtmt.tools["search"] = Tool(schema=_search_tool_schema, target=lambda args: _search_tool(search_client, semantic_configuration, identifier_field, content_field, embedding_field, use_vector_query, args))
     rtmt.tools["report_grounding"] = Tool(schema=_grounding_tool_schema, target=lambda args: _report_grounding_tool(search_client, identifier_field, title_field, content_field, args))
+    rtmt.tools["get_device_info"] = Tool(
+        schema={
+            "type": "function",
+            "name": "get_device_info",
+            "description": "Get device information based on the serial number provided by the user.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "serial_number": {
+                        "type": "string",
+                        "description": "Serial number of the device to look up."
+                    }
+                },
+                "required": ["serial_number"],
+                "additionalProperties": False
+            }
+        },
+        target=lambda args: _get_device_info_tool(args["serial_number"])
+    )
